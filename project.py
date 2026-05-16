@@ -1,5 +1,6 @@
 import sys
 
+EOI = "EOI"
 
 class Ins:
     def __init__(self, name, ln, params):
@@ -10,7 +11,6 @@ class Ins:
     def __str__(self):
         return f"{self.ln} {self.name}: {self.params}"
 
-# the stack also stores input
 class Stack:
     def __init__(self):
         self._stack = []
@@ -38,12 +38,30 @@ class State:
     def __init__(self):
         self.acc = 0
 
+class Input:
+    def __init__(self):
+        self._input = []
+        self._p = 0
+        self._len = 0
+
+    def add(self, n):
+        self._input.append(n)
+        self._len += 1
+
+    def get(self):
+        if self._p >= self._len:
+            return EOI
+        value = self._input[self._p]
+        self._p += 1
+        return value
+
 state = State()
 stack = Stack()
+input = None
 
 def main():
     if len(sys.argv) == 2:
-        populate_stack(sys.argv[1])
+        populate_input(sys.argv[1])
     program = preprocess()
     for ins in program:
         if ins.name == "MOV":
@@ -81,12 +99,14 @@ def preprocess():
     return program
 
 
-def populate_stack(filename):
+def populate_input(filename):
+    global input
+    input = Input()
     try:
         with open(filename) as f:
             for value in f:
                 try:
-                    stack.push(int(value))
+                    input.add(int(value))
                 except ValueError:
                     sys.exit("invalid input {value}")
     except FileNotFoundError:
@@ -101,8 +121,13 @@ def populate_stack(filename):
 # mov N, (OUT | ACC)
 def mov(src, dst, ln):
     if src == "IN":
+        if input == None:
+            sys.exit(f"L: {ln}, no input file provided")
         if dst == "ACC":
-            state.acc += stack.pop()
+            value = input.get()
+            if value == EOI:
+                sys.exit(f"L: {ln} EOI ERROR")
+            state.acc = value
         else:
             sys.exit(f"L: {ln} MOV: invalid dst {dst}")
     elif src == "ACC":
@@ -126,7 +151,12 @@ def add(src, ln):
     if src == "ACC":
         state.acc += state.acc
     elif src == "IN":
-        state.acc += stack.pop()
+        if input == None:
+            sys.exit(f"L: {ln}, no input file provided")
+        value = input.get()
+        if value == EOI:
+            sys.exit(f"L: {ln} EOI ERROR")
+        state.acc += value
     elif src.isdecimal():
         state.acc += int(src)
     else:
