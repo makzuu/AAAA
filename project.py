@@ -59,15 +59,66 @@ state = State()
 stack = Stack()
 input = None
 
+
+TOKEN_KIND_INT = "INTEGER"
+TOKEN_KIND_INS = "INSTRUCTION"
+TOKEN_KIND_COMMA = "COMMA"
+TOKEN_KIND_REGISTER = "REGISTER"
+
+class Token:
+    def __init__(self, kind, text):
+        self.kind = kind
+        self.text = text
+
+    def __str__(self):
+        return f"({self.kind} {self.text})"
+
 def main():
-    if len(sys.argv) == 2:
-        populate_input(sys.argv[1])
-    program = preprocess()
-    for ins in program:
-        if ins.name == "MOV":
-            mov(ins.params[0], ins.params[1], ins.ln)
-        elif ins.name == "ADD":
-            add(ins.params[0], ins.ln)
+    program = "MOV 1, ACC\nADD 1"
+    lines = program.split("\n")
+
+    # extrae tokens
+    tokens = []
+    for i, line in enumerate(lines):
+        j = 0
+        while j < len(line):
+            tok = ""
+            if line[j].isspace():
+                while j < len(line) and line[j].isspace():
+                    j += 1
+            elif line[j].isalpha():
+                while j < len(line) and line[j].isalpha():
+                    tok += line[j]
+                    j += 1
+                tok = tok.upper()
+                if tok in ["MOV", "ADD"]:
+                    tokens.append(Token(TOKEN_KIND_INS, tok))
+                elif tok == "ACC":
+                    tokens.append(Token(TOKEN_KIND_REGISTER, tok))
+                else:
+                    sys.exit(f"invalid shaiza: {tok}, line: {i}")
+            elif line[j].isdigit():
+                while j < len(line) and line[j].isdigit():
+                    tok += line[j]
+                    j += 1
+                tokens.append(Token(TOKEN_KIND_INT, tok))
+            else:
+                tok = line[j]
+                j += 1
+                if tok in [","]:
+                    tokens.append(Token(TOKEN_KIND_COMMA, tok))
+                else:
+                    sys.exit(f"invalid shaiza: {tok}, line: {i}")
+
+    for token in tokens:
+        print(token)
+
+    # analiza orden
+
+    # analiza logica
+
+    # ejecuta
+
 
 
 def preprocess():
