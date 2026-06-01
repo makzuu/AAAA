@@ -101,8 +101,8 @@ statement ::= ident ":" nl
     | "MOV" src "," dst nl
     | "SWP" nl
     | "SAV" nl
-    | "ADD" src "," dst nl
-    | "SUB" src "," dst nl
+    | "ADD" src nl
+    | "SUB" src nl
     | "NEG" 
     | "JMP" ident nl
     | "JEZ" ident nl
@@ -115,4 +115,5 @@ src ::= number | readable
 dst ::= writable
 readable ::= "ACC" | "IN" | "STACK"
 writable ::= "ACC" | "OUT" | "STACK" | "SCREEN"
+nl ::= nl+
 ```
