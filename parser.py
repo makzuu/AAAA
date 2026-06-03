@@ -15,13 +15,24 @@ class Parser:
         if self.cur_token.type == type:
             self.next_token()
         else:
-            sys.exit(f"invalid token {self.cur_token.text}")
+            self.print_and_exit(f"invalid token ({self.cur_token.text})")
 
     def next_token(self):
         self.cur_token = self.lexer.get_token()
 
+    def print_and_exit(self, msg):
+        error_msg = (
+                "ERROR:\n"
+                f"\tLine {self.cur_token.line}: {msg}"
+                )
+        sys.exit(error_msg)
+
     def program(self):
         print("PROGRAM")
+
+        while self.cur_token.type == TokenType.NL:
+            self.next_token()
+
         while self.cur_token.type != TokenType.EOF:
             self.statement()
 
@@ -91,7 +102,7 @@ class Parser:
             else:
                 self.readable()
         else:
-            sys.exit(f"invalid token {self.cur_token.text}")
+            self.print_and_exit(f"invalid token ({self.cur_token.text})")
 
         self.nl()
 
@@ -116,7 +127,7 @@ class Parser:
         elif self.check_type(TokenType.STACK):
             self.next_token()
         else:
-            sys.exit(f"invalid token {self.cur_token.text}")
+            self.print_and_exit(f"invalid token ({self.cur_token.text})")
 
     def writable(self):
         print("WRITABLE")
@@ -129,7 +140,7 @@ class Parser:
         elif self.check_type(TokenType.SCREEN):
             self.next_token()
         else:
-            sys.exit(f"invalid token {self.cur_token.text}")
+            self.print_and_exit(f"invalid token ({self.cur_token.text})")
 
     def nl(self):
         print("NL")
