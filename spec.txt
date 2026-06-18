@@ -1,0 +1,132 @@
+--- instructions
+
+nop - no operation
+mov <src>, <dst> - mov <src> to <dst>
+swp - swp acc and bak
+sav - save acc to bak
+add <src> - add <src> to acc
+sub <src> - subtract <src> from acc
+neg - negate acc
+jmp <label> - jump to <label>
+jez <label> - jump to <label> if acc = 0
+jnz <label> - jump to <label> if acc != 0
+jgz <label> - jump to <label> if acc > 0
+jlz <label> - jump to <label> if acc < 0
+jro <src> - jump to relative offset <src> (los labels no cuentan)
+
+read - read input and mov it to the stack
+write - write acc to output
+
+--- posible parameters
+
+mov src: (number | nil), dst: (acc | nil)
+
+
+--- example programs
+
+# double a value
+read
+add acc
+write
+
+---
+
+       v base
+stack: [1, 2]
+           ^ head
+
+al llamar un funcion:
+- tengo que guardar la instruccion a ejecutar al terminar la funcion
+- tengo que pasar argumentos
+- tengo que guardar la antigua ubicacion de base y head
+- tengo que ver como devolver un valor
+
+push acc		# guardar antiguo valor de acc (opt)
+push @<Label>   	# guardar la siguiente instruccion
+push base		# guardar ubicacion de base
+mov head, base  	# ahora la nueva base es head
+push 1			# pasar 1er argumento
+push 2			# pasar 2do argumento
+
+# calcular cosas
+pop acc
+add base(0)
+
+mov base, head		# restaurar head (lo que "borra" los argumentos)
+pop base		# restaurar base
+ret			# jmp a la siguiente instruccion
+
+write acc		# hacer algo con el valor retornado
+pop acc			# restaurar acc
+
+--- 20176
+
+# read 2 values a, b. write a - b, then write b - a.
+
+read			# read a value to the stack
+read
+
+mov base(0), acc	# copy the value at base offset by 0 to acc
+sub base(1)		# subtract the value at base offset by 1 from acc
+
+write acc
+
+mov base(1), acc
+sub base(0)
+
+write acc
+
+
+--- otra forma de hacer funciones
+
+push acc		# guarda acc
+call <label>		# pushea siguiente instruccion y jmp a <label>
+
+push base		# guardar base
+mov head, base		# mover head a base
+read
+read
+
+mov head(0), acc
+add head(1)
+
+mov base, head		# restaurar head
+pop base		# restaurar base
+
+ret			# ejecutar siguiente ins
+
+el unico problema que le veo es cuando tenga que pasar varios parametros
+
+
+---
+       v bp
+stack [1, 2, nexti, bp, 0]
+	  ^ sp
+swap:
+push bp
+mov sp, bp
+
+push nil
+
+mov bp(-4), bp(0)
+mov bp(-3), bp(-4)
+mov bp(0), bp(-3)
+
+mov bp, sp
+pop bp
+
+ret
+
+main:
+read
+read
+
+call swap
+
+pop acc
+write
+pop acc
+write
+
+
+---
