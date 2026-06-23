@@ -55,7 +55,7 @@ class Parser:
             print(self.expression())
             self.match_type(TokenType.COMMA)
             print(",")
-            self.dst()
+            print(self.dst())
         elif self.check_type(TokenType.SWP):
             self.next_token()
         elif self.check_type(TokenType.SAV):
@@ -188,9 +188,6 @@ class Parser:
                 # stack[stack[sp + offset]]
                 return self.state.index(self.state.index(self.state.sp + expression_value))
             else:
-list.insert(index, value, /)
-Insert an item at a given position. The first argument is the index of the element before which to insert, so a.insert(0, x) inserts at the front of the list, and a.insert(len(a), x) is equivalent to a.append(x).
-
                 self.print_and_exit(f"invalid token ({self.cur_token.text})")
         else:
             self.print_and_exit(f"invalid token ({self.cur_token.text})")
