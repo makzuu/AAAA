@@ -59,8 +59,10 @@ statement ::=
 
 dst ::=
 	| acc
-	| bp "(" expression ")"
-	| "*" bp "(" expression ")"
+	| bp					# bp
+	| bp "(" expression ")"			# bp + expression
+	| "*" bp "(" expression ")"		# stack[bp + expression]
+	| sp
 	| sp "(" expression ")"
 	| "*" sp "(" expression ")"
 
@@ -69,8 +71,10 @@ expression ::=
 	| nil
 	| acc
 	| const
-	| bp "(" expression ")"
-	| "*" bp "(" expression ")"
+	| bp					# stack[bp]
+	| bp "(" expression ")"			# stack[bp + expression]
+	| "*" bp "(" expression ")"		# stack[stack[bp + expression]]
+	| sp
 	| sp "(" expression ")"
 	| "*" sp "(" expression ")"
 

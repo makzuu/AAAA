@@ -50,12 +50,11 @@ class Parser:
         if self.check_type(TokenType.NOP):
             ...
         elif self.check_type(TokenType.MOV):
-            print("MOV")
             self.next_token()
-            print(self.expression())
+            expression_value = self.expression()
             self.match_type(TokenType.COMMA)
-            print(",")
-            print(self.dst())
+            dst_value = self.dst()
+            print(f"MOV {expression_value}, {dst_value}")
         elif self.check_type(TokenType.SWP):
             self.next_token()
         elif self.check_type(TokenType.SAV):
@@ -106,16 +105,20 @@ class Parser:
         self.nl()
 
 
+    # TODO: hacer lo mismo que con expression
     def dst(self):
         print("DST")
         if self.check_type(TokenType.ACC):
-            print("ACC")
             self.next_token()
+            return "ACC"
+        # bp "(" expression ")"
         elif self.check_type(TokenType.BP):
             self.next_token()
             self.match_type(TokenType.OPEN_PAREN)
-            self.expression()
+            expression_value = self.expression()
             self.match_type(TokenType.CLOSE_PAREN)
+            # stack index
+            return self.state.bp + expression_value
         elif self.check_type(TokenType.SP):
             self.next_token()
             self.match_type(TokenType.OPEN_PAREN)
@@ -154,22 +157,30 @@ class Parser:
         elif self.check_type(TokenType.IDENT):
             self.next_token()
             return self.state.consts[self.cur_token.text]
-        # bp "(" expression ")"
+        # | bp
+        # | bp "(" expression ")"
         elif self.check_type(TokenType.BP):
             self.next_token()
-            self.match_type(TokenType.OPEN_PAREN)
-            expression_value = self.expression()
-            self.match_type(TokenType.CLOSE_PAREN)
-            # stack[bp + offset]
-            return self.state.index(self.state.bp + expression_value)
-        # sp "(" expression ")"
+            self.check_type(TokenType.OPEN_PAREN):
+                self.next_token()
+                expression_value = self.expression()
+                self.match_type(TokenType.CLOSE_PAREN)
+                # stack[bp + offset]
+                return self.state.index(self.state.bp + expression_value)
+            return self.state.index(self.state.bp)
+        # | sp
+        # | sp "(" expression ")"
         elif self.check_type(TokenType.SP):
             self.next_token()
-            self.match_type(TokenType.OPEN_PAREN)
-            expression_value = self.expression()
-            self.match_type(TokenType.CLOSE_PAREN)
-            # stack[sp + offset]
-            return self.state.index(self.state.sp + expression_value)
+            self.check_type(TokenType.OPEN_PAREN):
+                self.next_token()
+                expression_value = self.expression()
+                self.match_type(TokenType.CLOSE_PAREN)
+                # stack[sp + offset]
+                return self.state.index(self.state.sp + expression_value)
+            return self.state.index(self.state.sp)
+        # | "*" bp "(" expression ")"
+        # | "*" sp "(" expression ")"
         elif self.check_type(TokenType.ASTERISK):
             self.next_token()
             # "*" bp "(" expression ")"
