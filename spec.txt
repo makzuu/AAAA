@@ -53,7 +53,7 @@ statement ::=
 	| pop dst nl
 	| read nl
 	| write expression nl
-	| define indent "," expression nl
+	| define indent "," number nl
 	| call indent nl
 	| ret nl
 

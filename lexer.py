@@ -1,5 +1,5 @@
 from enum import Enum
-import sys
+import logger as log
 
 class TokenType(Enum):
     EOF                 =  -1
@@ -59,7 +59,6 @@ class Token:
 class Lexer:
     def __init__(self, source):
         self.source = source + "\n"
-
         self.cur_pos = -1
         self.cur_char = ""
         self.cur_line = 1
@@ -86,13 +85,6 @@ class Lexer:
         if self.cur_char == "#":
             while self.cur_char != "\n":
                 self.next_char()
-
-    def print_and_exit(self, msg):
-        error_msg = (
-                "ERROR:\n"
-                f"\tLine {self.cur_line}: {msg}"
-                )
-        sys.exit(error_msg)
 
     def get_token(self):
         self.skip_whitespace()
@@ -121,7 +113,7 @@ class Lexer:
                 self.next_char()
             token_text = self.source[start_pos : self.cur_pos + 1]
             if token_text == "-":
-                self.print_and_exit(f"({self.peek_char()}) is not a number.")
+                log.error(f"({self.peek_char()}) is not a number")
             token = Token(token_text, TokenType.NUMBER, self.cur_line)
         elif self.cur_char.isalpha() or self.cur_char == "_":
             start_pos = self.cur_pos
@@ -132,11 +124,11 @@ class Lexer:
             token_type = Token.is_keyword(token_text)
 
             if token_type != None:
-                token = Token(token_text, token_type, self.cur_line)
+                token = Token(token_type.name, token_type, self.cur_line)
             else:
                 token = Token(token_text, TokenType.IDENT, self.cur_line)
         else:
-            self.print_and_exit(f"Unkown token ({self.cur_char})")
+            log.error(f"Unkown token ({self.cur_char})")
 
         self.next_char()
 

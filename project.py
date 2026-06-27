@@ -2,6 +2,7 @@ import sys
 from lexer import *
 from parser import *
 from state import State
+from eval import *
 
 def main():
     if len(sys.argv) < 2:
@@ -9,12 +10,12 @@ def main():
     source = get_source(sys.argv[1])
     lex = Lexer(source)
     state = State()
-    parser = Parser(lex, state)
-    parser.preprocess()
-    for label in state.labels:
-        print(label, state.labels[label])
+    eval = Eval(state)
+    parser = Parser(lex, state, eval)
+    parser.program()
+    eval.run()
 
-    # parser.program()
+    debug(state)
 
 
 def get_source(filename):
@@ -24,6 +25,19 @@ def get_source(filename):
     except FileNotFoundError:
         sys.exit(f"file {filename} does not exist")
     return source
+
+
+def debug(state):
+    print("<DEBUG")
+    print(f"acc = {state.acc}, bak = {state.bak}, bp = {state.bp}, sp = {state.sp}")
+    print(f"stack = {state.stack}")
+    print("Labels:")
+    for label in state.labels:
+        print(f"\t{label}: {state.labels[label]}")
+    print("Consts")
+    for const in state.consts:
+        print(f"\t{const}: {state.consts[const]}")
+    print("DEBUG>")
 
 
 if __name__ == "__main__":
