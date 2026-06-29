@@ -1,6 +1,5 @@
-from lexer import *
-from eval import *
 import logger as log
+from token import TokenType
 
 class Parser:
     def __init__(self, lexer, state, eval):
@@ -27,17 +26,17 @@ class Parser:
         while self.cur_token.type == TokenType.NL:
             self.next_token()
 
-    def program(self):
-        print("PROGRAM")
+    def check_label(self):
+        if not self.cur_token.text in self.state.labels:
+            log.error(f"Label ({self.cur_token.text}) in not defined)", self.cur_token.line)
 
+    def program(self):
         self.skip_nl()
 
         while self.cur_token.type != TokenType.EOF:
             self.statement()
 
     def statement(self):
-        print("STATEMENT")
-
         if self.check_type(TokenType.NOP):
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.eval.instruction_done()
@@ -79,6 +78,7 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
+            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -86,6 +86,7 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
+            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -93,6 +94,7 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
+            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -100,6 +102,7 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
+            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -107,6 +110,7 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
+            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -172,7 +176,6 @@ class Parser:
 
 
     def dst(self):
-        print("DST")
         if self.check_type(TokenType.ACC):
             self.eval.add_argument(self.cur_token)
             self.next_token()
@@ -184,7 +187,7 @@ class Parser:
                 self.eval.argument_append(self.cur_token)
                 self.next_token()
                 self.eval.argument_append(self.cur_token)
-                self.primary()
+                self.match_type(TokenType.NUMBER)
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.CLOSE_PAREN)
         elif self.check_type(TokenType.SP):
@@ -194,7 +197,7 @@ class Parser:
                 self.eval.argument_append(self.cur_token)
                 self.next_token()
                 self.eval.argument_append(self.cur_token)
-                self.primary()
+                self.match_type(TokenType.NUMBER)
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.CLOSE_PAREN)
         elif self.check_type(TokenType.ASTERISK):
@@ -206,7 +209,7 @@ class Parser:
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.OPEN_PAREN)
                 self.eval.argument_append(self.cur_token)
-                self.primary()
+                self.match_type(TokenType.NUMBER)
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.CLOSE_PAREN)
             elif self.check_type(TokenType.SP):
@@ -215,7 +218,7 @@ class Parser:
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.OPEN_PAREN)
                 self.eval.argument_append(self.cur_token)
-                self.primary()
+                self.match_type(TokenType.NUMBER)
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.CLOSE_PAREN)
             else:
@@ -224,7 +227,6 @@ class Parser:
             log.error(f"invalid token ({self.cur_token.text})", self.cur_token.line)
 
     def expression(self):
-        print("EXPRESSION")
         # | bp
         # | bp "(" primary ")"
         if self.check_type(TokenType.BP):
@@ -234,7 +236,7 @@ class Parser:
                 self.eval.argument_append(self.cur_token)
                 self.next_token()
                 self.eval.argument_append(self.cur_token)
-                self.primary()
+                self.match_type(TokenType.NUMBER)
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.CLOSE_PAREN)
         # | sp
@@ -246,7 +248,7 @@ class Parser:
                 self.eval.argument_append(self.cur_token)
                 self.next_token()
                 self.eval.argument_append(self.cur_token)
-                self.primary()
+                self.match_type(TokenType.NUMBER)
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.CLOSE_PAREN)
         # | "*" bp "(" primary ")"
@@ -261,7 +263,7 @@ class Parser:
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.OPEN_PAREN)
                 self.eval.argument_append(self.cur_token)
-                self.primary()
+                self.match_type(TokenType.NUMBER)
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.CLOSE_PAREN)
             # "*" sp "(" primary ")"
@@ -271,7 +273,7 @@ class Parser:
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.OPEN_PAREN)
                 self.eval.argument_append(self.cur_token)
-                self.primary()
+                self.match_type(TokenType.NUMBER)
                 self.eval.argument_append(self.cur_token)
                 self.match_type(TokenType.CLOSE_PAREN)
             else:
@@ -295,7 +297,6 @@ class Parser:
             log.error(f"invalid token ({self.cur_token.text})", self.cur_token.line)
 
     def nl(self):
-        print("NL")
         self.match_type(TokenType.NL)
 
         while self.check_type(TokenType.NL):

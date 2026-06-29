@@ -60,18 +60,18 @@ statement ::=
 dst ::= acc
       | bp					# bp
       | sp
-      | bp "(" primary ")"			# bp + expression
-      | "*" bp "(" primary ")"		   	# stack[bp + expression]
-      | sp "(" primary ")"
-      | "*" sp "(" primary ")"
+      | bp "(" number ")"			# bp + expression
+      | "*" bp "(" number ")"		   	# stack[bp + expression]
+      | sp "(" number ")"
+      | "*" sp "(" number ")"
 
 expression ::= primary
 	| bp					# bp
 	| sp
-	| bp "(" primary ")"			# stack[bp + expression]
-	| "*" bp "(" primary ")"		# stack[stack[bp + expression]]
-	| sp "(" primary ")"
-	| "*" sp "(" primary ")"
+	| bp "(" number ")"			# stack[bp + expression]
+	| "*" bp "(" number ")"		# stack[stack[bp + expression]]
+	| sp "(" number ")"
+	| "*" sp "(" number ")"
 
 primary ::= number
 	  | nil

@@ -1,10 +1,14 @@
+import logger as log
+
 class State:
     def __init__(self):
         self.acc = 0
         self.bak = 0
         self.stack = []
         self.bp = 0
-        self.sp = len(self.stack)
+        self.sp = 0
+
+        self.line = None
 
         self.consts = {}
         self.labels = {}
@@ -19,10 +23,18 @@ class State:
             self.sp -= 1
             return value
         except IndexError:
-            return 0
+            log.error(f"stack is empty", self.line)
 
     def index(self, i):
         try:
             return self.stack[i]
         except IndexError:
-            return 0
+            log.error(f"index ({i}) out of bounds", self.line)
+
+    def insert(self, i, value):
+        try:
+            if i < 0:
+                log.error(f"index ({i}) out of bounds", self.line)
+            self.stack[i] = value
+        except IndexError:
+            log.error(f"index ({i}) out of bounds", self.line)
