@@ -25,7 +25,7 @@ class Eval:
         if name in self.state.consts:
             log.warning("{name} already defined", line)
             return
-        self.state.consts[name] = int(value)
+        self.state.consts[name] = self.limit(int(value))
 
     def add_instruction(self, name, line):
         self.tmp_instruction = Instruction(name, {}, line)
@@ -75,7 +75,7 @@ class Eval:
         elif token.type == TokenType.NIL:
             return 0
         elif token.type == TokenType.NUMBER:
-            return int(token.text)
+            return self.limit(int(token.text))
         elif token.type == TokenType.IDENT:
             return self.state.consts[token.text]
 
@@ -109,14 +109,14 @@ class Eval:
                 src = self.get_src_value(i_params["src"])
 
                 if i_params["dst"][0].type == TokenType.ACC:
-                    self.state.acc = self.limit(src)
+                    self.state.acc = src
                 elif i_params["dst"][0].type == TokenType.BP and len(i_params["dst"]) == 1:
                     self.state.bp = src
                 elif i_params["dst"][0].type == TokenType.SP and len(i_params["dst"]) == 1:
                     self.state.sp = src
                 else:
                     dst = self.get_dst_index(i_params["dst"])
-                    self.state.insert(dst, self.limit(src))
+                    self.state.insert(dst, src)
 
             elif i_name == TokenType.SWP.name:
                 tmp = self.state.acc
@@ -181,7 +181,7 @@ class Eval:
                 continue
 
             elif i_name == TokenType.PUSH.name:
-                self.state.push(self.limit(self.get_src_value(i_params["src"])))
+                self.state.push(self.get_src_value(i_params["src"]))
 
             elif i_name == TokenType.POP.name:
                 if i_params["dst"][0].type == TokenType.ACC:
@@ -195,10 +195,10 @@ class Eval:
 
             elif i_name == TokenType.READ.name:
                 try:
-                    number = int(input("< "))
+                    number = self.limit(int(input("< ")))
                 except ValueError:
                     number = 0
-                self.state.push(self.limit(number))
+                self.state.push(number)
 
             elif i_name == TokenType.WRITE.name:
                 print(">", self.get_src_value(i_params["src"]))
