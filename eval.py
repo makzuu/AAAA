@@ -105,4 +105,12 @@ class Eval:
                     dst = self.get_dst_index(i_params["dst"])
                     self.state.insert(dst, src)
 
+            elif i_name == TokenType.SWP.name:
+                tmp = self.state.acc
+                self.state.acc = self.state.bak
+                self.state.bak = tmp
+
+            elif i_name == TokenType.SAV.name:
+                self.state.bak = self.state.acc
+
             i_num += 1
