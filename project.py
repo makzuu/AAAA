@@ -34,7 +34,7 @@ def debug(state):
     print("Labels:")
     for label in state.labels:
         print(f"\t{label}: {state.labels[label]}")
-    print("Consts")
+    print("Consts:")
     for const in state.consts:
         print(f"\t{const}: {state.consts[const]}")
     print("DEBUG>")

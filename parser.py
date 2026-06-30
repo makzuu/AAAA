@@ -26,10 +26,6 @@ class Parser:
         while self.cur_token.type == TokenType.NL:
             self.next_token()
 
-    def check_label(self):
-        if not self.cur_token.text in self.state.labels:
-            log.error(f"Label ({self.cur_token.text}) in not defined)", self.cur_token.line)
-
     def program(self):
         self.skip_nl()
 
@@ -78,7 +74,6 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
-            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -86,7 +81,6 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
-            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -94,7 +88,6 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
-            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -102,7 +95,6 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
-            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()
@@ -110,7 +102,6 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.add_argument(self.cur_token)
-            self.check_label()
             self.match_type(TokenType.IDENT)
             self.eval.argument_done("label")
             self.eval.instruction_done()

@@ -80,12 +80,18 @@ class Eval:
             value = self.consts[token.text]
         return value
 
-    def limit(self, number):
-        if number > 999:
-            return 999
-        if number < -999:
-            return -999
+    def limit(self, number, low=-999, high=999):
+        if number > high:
+            return high
+        if number < low:
+            return low
         return number
+
+    def get_instruction_number(self, label, line):
+        if label not in self.state.labels:
+            log.error(f"Label ({label}) is not defined", line)
+        return self.state.labels[label]
+
 
     def run(self):
         self.instructions.append(Instruction("NOP", None, None))
@@ -130,5 +136,48 @@ class Eval:
 
             elif i_name == TokenType.NEG.name:
                 self.state.acc *= -1
+
+            elif i_name == TokenType.JMP.name:
+                label = i_params["label"][0].text
+                line = i_params["label"][0].line
+
+                i_num = self.get_instruction_number(label, line)
+                continue
+
+            elif i_name == TokenType.JEZ.name:
+                label = i_params["label"][0].text
+                line = i_params["label"][0].line
+
+                if self.state.acc == 0:
+                    i_num = self.get_instruction_number(label, line)
+                    continue
+
+            elif i_name == TokenType.JNZ.name:
+                label = i_params["label"][0].text
+                line = i_params["label"][0].line
+
+                if self.state.acc != 0:
+                    i_num = self.get_instruction_number(label, line)
+                    continue
+
+            elif i_name == TokenType.JGZ.name:
+                label = i_params["label"][0].text
+                line = i_params["label"][0].line
+
+                if self.state.acc >= 0:
+                    i_num = self.get_instruction_number(label, line)
+                    continue
+
+            elif i_name == TokenType.JLZ.name:
+                label = i_params["label"][0].text
+                line = i_params["label"][0].line
+
+                if self.state.acc <= 0:
+                    i_num = self.get_instruction_number(label, line)
+                    continue
+
+            elif i_name == TokenType.JRO.name:
+                i_num = self.limit(self.get_src_value(i_params["src"]), low=0, high=len(self.instructions) - 1)
+                continue
 
             i_num += 1
