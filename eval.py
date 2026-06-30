@@ -80,6 +80,13 @@ class Eval:
             value = self.consts[token.text]
         return value
 
+    def limit(self, number):
+        if number > 999:
+            return 999
+        if number < -999:
+            return -999
+        return number
+
     def run(self):
         self.instructions.append(Instruction("NOP", None, None))
 
@@ -96,14 +103,14 @@ class Eval:
                 src = self.get_src_value(i_params["src"])
 
                 if i_params["dst"][0].type == TokenType.ACC:
-                    self.state.acc = src
+                    self.state.acc = self.limit(src)
                 elif i_params["dst"][0].type == TokenType.BP and len(i_params["dst"]) == 1:
                     self.state.bp = src
                 elif i_params["dst"][0].type == TokenType.SP and len(i_params["dst"]) == 1:
                     self.state.sp = src
                 else:
                     dst = self.get_dst_index(i_params["dst"])
-                    self.state.insert(dst, src)
+                    self.state.insert(dst, self.limit(src))
 
             elif i_name == TokenType.SWP.name:
                 tmp = self.state.acc
