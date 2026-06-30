@@ -110,6 +110,8 @@ class Eval:
 
                 if i_params["dst"][0].type == TokenType.ACC:
                     self.state.acc = src
+                elif i_params["dst"][0].type == TokenType.NIL:
+                    NIL = src
                 elif i_params["dst"][0].type == TokenType.BP and len(i_params["dst"]) == 1:
                     self.state.bp = src
                 elif i_params["dst"][0].type == TokenType.SP and len(i_params["dst"]) == 1:
@@ -186,6 +188,8 @@ class Eval:
             elif i_name == TokenType.POP.name:
                 if i_params["dst"][0].type == TokenType.ACC:
                     self.state.acc = self.state.pop()
+                if i_params["dst"][0].type == TokenType.NIL:
+                    NIL = self.state.pop()
                 elif i_params["dst"][0].type == TokenType.BP and len(i_params["dst"]) == 1:
                     self.state.bp = self.state.pop()
                 elif i_params["dst"][0].type == TokenType.SP and len(i_params["dst"]) == 1:

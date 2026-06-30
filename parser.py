@@ -171,6 +171,9 @@ class Parser:
         if self.check_type(TokenType.ACC):
             self.eval.add_argument(self.cur_token)
             self.next_token()
+        elif self.check_type(TokenType.NIL):
+            self.eval.add_argument(self.cur_token)
+            self.next_token()
         # bp "(" expression ")"
         elif self.check_type(TokenType.BP):
             self.eval.add_argument(self.cur_token)

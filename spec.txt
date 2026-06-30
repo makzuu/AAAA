@@ -58,6 +58,7 @@ statement ::=
 	| ret nl
 
 dst ::= acc
+      | nil
       | bp					# bp
       | sp
       | bp "(" number ")"			# bp + expression
