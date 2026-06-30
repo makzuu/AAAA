@@ -128,4 +128,7 @@ class Eval:
                 src = self.get_src_value(i_params["src"])
                 self.state.acc = self.limit(self.state.acc - src)
 
+            elif i_name == TokenType.NEG.name:
+                self.state.acc *= -1
+
             i_num += 1
