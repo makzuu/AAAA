@@ -192,4 +192,23 @@ class Eval:
                 else:
                     self.state.insert(self.get_dst_index(i_params["dst"]), self.state.pop())
 
+            elif i_name == TokenType.READ.name:
+                try:
+                    number = int(input("< "))
+                except ValueError:
+                    number = 0
+                self.state.push(self.limit(number))
+
+            elif i_name == TokenType.WRITE.name:
+                print(">", self.get_src_value(i_params["src"]))
+
+            elif i_name == TokenType.DEFINE.name:
+                ...
+
+            elif i_name == TokenType.CALL.name:
+                ...
+
+            elif i_name == TokenType.RET.name:
+                ...
+
             i_num += 1
