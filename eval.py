@@ -77,7 +77,7 @@ class Eval:
         elif token.type == TokenType.NUMBER:
             return int(token.text)
         elif token.type == TokenType.IDENT:
-            return self.consts[token.text]
+            return self.state.consts[token.text]
 
     def limit(self, number, low=-999, high=999):
         if number > high:
@@ -102,6 +102,7 @@ class Eval:
 
             i_name = self.instructions[i_num].name
             i_params = self.instructions[i_num].params
+            i_line = self.instructions[i_num].line
 
             # mov src, dst
             if i_name == TokenType.MOV.name:
@@ -202,13 +203,14 @@ class Eval:
             elif i_name == TokenType.WRITE.name:
                 print(">", self.get_src_value(i_params["src"]))
 
-            elif i_name == TokenType.DEFINE.name:
-                ...
-
             elif i_name == TokenType.CALL.name:
-                ...
+                self.state.push(i_num + 1)
+                label = i_params["label"][0].text
+                i_num = self.get_instruction_number(label, i_line)
+                continue
 
             elif i_name == TokenType.RET.name:
-                ...
+                i_num = self.state.pop()
+                continue
 
             i_num += 1

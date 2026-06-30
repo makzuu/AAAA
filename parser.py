@@ -158,8 +158,9 @@ class Parser:
             self.eval.argument_done("label")
             self.eval.instruction_done()
         elif self.check_type(TokenType.RET):
-            self.eval.add_argument(self.cur_token.text, self.cur_token.line)
+            self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
+            self.eval.instruction_done()
         else:
             log.error(f"invalid token ({self.cur_token.text})", self.cur_token.line)
 
