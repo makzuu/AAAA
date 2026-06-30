@@ -48,37 +48,36 @@ class Eval:
             offset = 0
             if len(src_tokens) > 1:
                 offset = int(src_tokens[2].text)
-            src = self.state.index(self.state.bp + offset)
+                return self.state.index(self.state.bp + offset)
+            return self.state.bp
         elif src_tokens[0].type == TokenType.SP:
             offset = 0
             if len(src_tokens) > 1:
                 offset = int(src_tokens[2].text)
-            src = self.state.index(self.state.sp + offset)
+                return self.state.index(self.state.sp + offset)
+            return self.state.sp
         elif src_tokens[0].type == TokenType.ASTERISK:
-            src = self.state.index(self.get_src_value(src_tokens[1:]))
+            return self.state.index(self.get_src_value(src_tokens[1:]))
         else:
-            src = self.get_primary_value(src_tokens[0])
-        return src
+            return self.get_primary_value(src_tokens[0])
 
     def get_dst_index(self, dst_tokens):
         if dst_tokens[0].type == TokenType.BP:
-            index = self.state.bp + int(dst_tokens[2].text)
+            return self.state.bp + int(dst_tokens[2].text)
         elif dst_tokens[0].type == TokenType.SP:
-            index = self.state.sp + int(dst_tokens[2].text)
+            return self.state.sp + int(dst_tokens[2].text)
         elif dst_tokens[0].type == TokenType.ASTERISK:
-            index = self.get_src_value(dst_tokens[1:])
-        return index
+            return self.get_src_value(dst_tokens[1:])
 
     def get_primary_value(self, token):
         if token.type == TokenType.ACC:
-            value = self.state.acc
+            return self.state.acc
         elif token.type == TokenType.NIL:
-            value = 0
+            return 0
         elif token.type == TokenType.NUMBER:
-            value = int(token.text)
+            return int(token.text)
         elif token.type == TokenType.IDENT:
-            value = self.consts[token.text]
-        return value
+            return self.consts[token.text]
 
     def limit(self, number, low=-999, high=999):
         if number > high:
@@ -179,5 +178,18 @@ class Eval:
             elif i_name == TokenType.JRO.name:
                 i_num = self.limit(self.get_src_value(i_params["src"]), low=0, high=len(self.instructions) - 1)
                 continue
+
+            elif i_name == TokenType.PUSH.name:
+                self.state.push(self.limit(self.get_src_value(i_params["src"])))
+
+            elif i_name == TokenType.POP.name:
+                if i_params["dst"][0].type == TokenType.ACC:
+                    self.state.acc = self.state.pop()
+                elif i_params["dst"][0].type == TokenType.BP and len(i_params["dst"]) == 1:
+                    self.state.bp = self.state.pop()
+                elif i_params["dst"][0].type == TokenType.SP and len(i_params["dst"]) == 1:
+                    self.state.sp = self.state.sp
+                else:
+                    self.state.insert(self.get_dst_index(i_params["dst"]), self.state.pop())
 
             i_num += 1
