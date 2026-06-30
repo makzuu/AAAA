@@ -41,20 +41,20 @@ statement ::=
 	| add expression nl
 	| sub expression nl
 	| neg nl
-	| jmp indent nl
-	| jez indent nl
-	| jnz indent nl
-	| jgz indent nl
-	| jlz indent nl
+	| jmp ident nl
+	| jez ident nl
+	| jnz ident nl
+	| jgz ident nl
+	| jlz ident nl
 	| jro expression nl
 
-	| indent ":"
+	| ident ":"
 	| push expression nl
 	| pop dst nl
 	| read nl
 	| write expression nl
-	| define indent "," number nl
-	| call indent nl
+	| define ident "," number nl
+	| call ident nl
 	| ret nl
 
 dst ::= acc
@@ -76,6 +76,6 @@ expression ::= primary
 primary ::= number
 	  | nil
 	  | acc
-	  | indent
+	  | ident
 
 nl ::= nl+
