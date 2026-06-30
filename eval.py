@@ -120,4 +120,12 @@ class Eval:
             elif i_name == TokenType.SAV.name:
                 self.state.bak = self.state.acc
 
+            elif i_name == TokenType.ADD.name:
+                src = self.get_src_value(i_params["src"])
+                self.state.acc = self.limit(self.state.acc + src)
+
+            elif i_name == TokenType.SUB.name:
+                src = self.get_src_value(i_params["src"])
+                self.state.acc = self.limit(self.state.acc - src)
+
             i_num += 1
