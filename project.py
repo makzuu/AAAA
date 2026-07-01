@@ -37,6 +37,11 @@ def debug(state):
     print("Consts:")
     for const in state.consts:
         print(f"\t{const}: {state.consts[const]}")
+
+    for rows in state.drawing_area:
+        for row in rows:
+            print(row, end="")
+        print()
     print("DEBUG>")
 
 

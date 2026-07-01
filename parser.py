@@ -161,6 +161,10 @@ class Parser:
             self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
             self.next_token()
             self.eval.instruction_done()
+        elif self.check_type(TokenType.DRAW):
+            self.eval.add_instruction(self.cur_token.text, self.cur_token.line)
+            self.next_token()
+            self.eval.instruction_done()
         else:
             log.error(f"invalid token ({self.cur_token.text})", self.cur_token.line)
 

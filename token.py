@@ -32,11 +32,12 @@ class TokenType(Enum):
     DEFINE              = 118
     CALL                = 119
     RET                 = 120
+    DRAW                = 121
 
-    ACC                 = 121
-    NIL                 = 122
-    BP                  = 123
-    SP                  = 124
+    ACC                 = 122
+    NIL                 = 123
+    BP                  = 124
+    SP                  = 125
 
     IDENT               = 201
     NUMBER              = 202

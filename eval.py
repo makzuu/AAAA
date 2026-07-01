@@ -217,4 +217,35 @@ class Eval:
                 i_num = self.state.pop()
                 continue
 
+            # take at least 4 values from the stack ([bp:sp]):
+            # 2 for x and y
+            # 1 or more for color
+            # and a negative value that ends the sequence.
+            # if there are less that 4 values: ERROR!
+            # if x and y are outside of the drawing area: don't draw shit
+            elif i_name == TokenType.DRAW.name:
+                w = 30
+                h = 18
+                draw_i = self.state.stack[self.state.bp:self.state.sp]
+                if len(draw_i) < 4:
+                    i_num += 1
+                    continue
+                if draw_i[-1] >= 0:
+                    i_num += 1
+                    continue
+                x, y = draw_i[0:2]
+                if x >= w or x < 0:
+                    i_num += 1
+                    continue
+                if y >= h or y < 0:
+                    i_num += 1
+                    continue
+
+                colors = draw_i[2:-1]
+                print(f"coor: {x}:{y}, colors: {colors}, end character: {draw_i[-1]}")
+
+                for color in colors:
+                    self.state.drawing_area[y][x] = "█"
+                    x += 1
+
             i_num += 1
