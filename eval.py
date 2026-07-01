@@ -113,9 +113,9 @@ class Eval:
                 elif i_params["dst"][0].type == TokenType.NIL:
                     NIL = src
                 elif i_params["dst"][0].type == TokenType.BP and len(i_params["dst"]) == 1:
-                    self.state.bp = src
+                    self.state.bp = self.limit(src, low=0)
                 elif i_params["dst"][0].type == TokenType.SP and len(i_params["dst"]) == 1:
-                    self.state.sp = src
+                    self.state.sp = self.limit(src, low=0)
                 else:
                     dst = self.get_dst_index(i_params["dst"])
                     self.state.insert(dst, src)
@@ -191,9 +191,9 @@ class Eval:
                 elif i_params["dst"][0].type == TokenType.NIL:
                     NIL = self.state.pop()
                 elif i_params["dst"][0].type == TokenType.BP and len(i_params["dst"]) == 1:
-                    self.state.bp = self.state.pop()
+                    self.state.bp = self.limit(self.state.pop(), low=0)
                 elif i_params["dst"][0].type == TokenType.SP and len(i_params["dst"]) == 1:
-                    self.state.sp = self.state.pop()
+                    self.state.sp = self.limit(self.state.pop(), low=0)
                 else:
                     self.state.insert(self.get_dst_index(i_params["dst"]), self.state.pop())
 
